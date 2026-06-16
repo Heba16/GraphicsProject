@@ -22,6 +22,8 @@ class DrawPanel extends JPanel implements MouseListener {
     private Rectangle replaceHitbox;
     private Rectangle playAgainHitbox;
 
+    mySound sound = new mySound();
+
     public DrawPanel() {
         cards = new Card[3][3];
         d = new Deck();
@@ -58,7 +60,6 @@ class DrawPanel extends JPanel implements MouseListener {
         for (int r = 0; r < cards.length; r++) {
             for (int c = 0; c < cards[r].length; c++) {
                 String value = cards[r][c].getValue();
-
                 if (value.equals("A")) {
                     containsAce = true;
                 } else if (value.equals("J")) {
@@ -135,8 +136,15 @@ class DrawPanel extends JPanel implements MouseListener {
         }
     }
 
+    //adding sound effects
+    public void playSE(int i) {
+        sound.setFile(i);
+        sound.play();
+    }
+
     public void resetGame() {
         d = new Deck();
+        playSE(2);
         for (int r = 0; r < cards.length; r++) {
             for (int c = 0; c < cards[r].length; c++) {
                 cards[r][c] = d.getRandomCard();
@@ -169,13 +177,14 @@ class DrawPanel extends JPanel implements MouseListener {
             Point p = e.getPoint();
             int button = e.getButton();
             System.out.println(countHighlight);
+
             for (int r = 0; r < cards.length; r++) {
                 for (int c = 0; c < cards.length; c++) {
                 //see what cards are left-click selected and create a number to represent their sum
                     if (button == 3 && cards[r][c].getHitbox().contains(p)) {
                         cards[r][c].flipHighlight();
                         countHighlight++;
-
+                        playSE(0);
                         if (cards[r][c].getValue().equals("J")) {
                             cardsChosen.add(cards[r][c]);
                             cardsRows.add(r);
@@ -213,14 +222,12 @@ class DrawPanel extends JPanel implements MouseListener {
                     for (Card card : cardsChosen) {
                         card.flipHighlight();
                     }
-                    for (int r = 0; r < cardsRows.size(); r++) {
-                        for (int c = 0; c < cardsColumns.size(); c++) {
-                            if (r == c) {
-                                int t = cardsRows.get(r);
-                                int y = cardsColumns.get(c);
-                                cards[t][y] = d.getRandomCard();
-                            }
-                        }
+                    for (int i = 0; i < cardsRows.size(); i++) {
+                        int c = cardsColumns.get(i);
+                        int r = cardsRows.get(i);
+
+                        cards[r][c] = d.getRandomCard();
+                        playSE(1);
                     }
                     checkDeck();
                     cardsChosen.clear();
@@ -234,14 +241,11 @@ class DrawPanel extends JPanel implements MouseListener {
                     for (Card card : cardsChosen) {
                         card.flipHighlight();
                     }
-                    for (int r = 0; r < cardsRows.size(); r++) {
-                        for (int c = 0; c < cardsColumns.size(); c++) {
-                            if (r == c) {
-                                int t = cardsRows.get(r);
-                                int y = cardsColumns.get(c);
-                                cards[t][y] = d.getRandomCard();
-                            }
-                        }
+                    for (int i = 0; i < cardsRows.size(); i++) {
+                        int r = cardsRows.get(i);
+                        int c = cardsColumns.get(i);
+                        cards[r][c] = d.getRandomCard();
+                        playSE(1);
                     }
                     checkDeck();
                     cardsChosen.clear();
